@@ -14,6 +14,7 @@ public class Main {
 					VPrincipal frame = new VPrincipal();
 					frame.setVisible(true);
 					frame.setResizable(false);
+					frame.setTitle("Conexión a base de datos");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

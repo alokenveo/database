@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 
 import conexiones.Conexion;
 import paneles.Base;
+import java.awt.BorderLayout;
 
 public class VPrincipal extends JFrame {
 
@@ -34,29 +35,28 @@ public class VPrincipal extends JFrame {
 	 */
 	public VPrincipal() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 715, 474);
+		setBounds(100, 100, 710, 473);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
+		contentPane.setLayout(new BorderLayout(0, 0));
 		
 		JPanel pPrincipal = new JPanel();
 		pPrincipal.setBackground(new Color(0, 128, 255));
-		pPrincipal.setBounds(0, 0, 699, 435);
 		contentPane.add(pPrincipal);
 		pPrincipal.setLayout(null);
 		
 		JPanel panel = new JPanel();
+		panel.setBounds(232, 104, 243, 290);
 		panel.setBackground(new Color(255, 255, 255));
-		panel.setBounds(229, 101, 248, 288);
 		pPrincipal.add(panel);
 		panel.setLayout(null);
 		
 		JLabel etInicio = new JLabel("INICIAR BASE DE DATOS");
 		etInicio.setFont(new Font("Tahoma", Font.BOLD, 15));
 		etInicio.setHorizontalAlignment(SwingConstants.CENTER);
-		etInicio.setBounds(31, 25, 207, 26);
+		etInicio.setBounds(20, 11, 207, 26);
 		panel.add(etInicio);
 		
 		etAviso.setFont(new Font("Tahoma", Font.BOLD, 11));
