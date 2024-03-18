@@ -6,6 +6,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/sqljdbc_12.4/esn/jars/mssql-jdbc-12.4.2.jre11.jar"/>
+	<classpathentry kind="lib" path="C:/sqljdbc_12.4/esn/jars/mssql-jdbc-12.4.2.jre11.jar" sourcepath="C:/sqljdbc_12.4/esn/jars/mssql-jdbc-12.4.2.jre11-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/C:/sqljdbc_12.4/esn/jars/mssql-jdbc-12.4.2.jre11-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
