@@ -3,6 +3,7 @@ package conexiones;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import jdk.internal.org.jline.terminal.TerminalBuilder;
 
 public class Conexion {
 	private static Connection cn;
@@ -20,6 +21,7 @@ public class Conexion {
 			cn = DriverManager.getConnection(cadenaConexion,"" , "");
 		} catch (Exception e) {
 			cn = null;
+                        System.out.println(e.getMessage());
 		}
 
 		return cn;
