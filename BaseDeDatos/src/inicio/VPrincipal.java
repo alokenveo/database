@@ -23,7 +23,7 @@ import conexiones.Conexion;
 import paneles.Base;
 import java.awt.FlowLayout;
 
-public class VPrincipal extends JFrame {
+public class VPrincipal extends javax.swing.JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
