@@ -2,21 +2,23 @@ package paneles;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import inicio.VPrincipal;
 import javax.swing.SwingConstants;
-import java.awt.Component;
-import java.awt.Font;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
+
+import conexiones.Conexion;
+import inicio.VPrincipal;
 
 public class Base extends JPanel {
 
@@ -29,6 +31,7 @@ public class Base extends JPanel {
 	private VPrincipal v;
 	private boolean botonesAdded=false;
 	private Mantenimiento m;
+	private Conexion c;
 
 	/**
 	 * Create the panel.
@@ -128,6 +131,7 @@ public class Base extends JPanel {
 	
 	public void setV(VPrincipal v) {
 		this.v=v;
+		this.c=v.getCon();
 		lblNewLabel.setText(lblNewLabel.getText()+v.getCon().getDatabaseName()+"!");
 	}
 	
@@ -141,6 +145,10 @@ public class Base extends JPanel {
 	
 	public JPanel getCenterPanel() {
 		return centerPanel;
+	}
+	
+	public Conexion getCon() {
+		return c;
 	}
 	
 	private void mostrarPanelMantenimiento(JPanel c) {
