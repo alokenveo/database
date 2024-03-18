@@ -1,12 +1,15 @@
 package inicio;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,7 +21,7 @@ import javax.swing.border.EmptyBorder;
 
 import conexiones.Conexion;
 import paneles.Base;
-import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 public class VPrincipal extends JFrame {
 
@@ -35,7 +38,7 @@ public class VPrincipal extends JFrame {
 	 */
 	public VPrincipal() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 710, 473);
+		setBounds(240, 70, 870, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -45,13 +48,15 @@ public class VPrincipal extends JFrame {
 		JPanel pPrincipal = new JPanel();
 		pPrincipal.setBackground(new Color(0, 128, 255));
 		contentPane.add(pPrincipal);
-		pPrincipal.setLayout(null);
+		pPrincipal.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(232, 104, 243, 290);
+		panel.setPreferredSize(new Dimension(243,290));
 		panel.setBackground(new Color(255, 255, 255));
 		pPrincipal.add(panel);
 		panel.setLayout(null);
+		
+		pPrincipal.add(Box.createRigidArea(new Dimension(0,50)));
 		
 		JLabel etInicio = new JLabel("INICIAR BASE DE DATOS");
 		etInicio.setFont(new Font("Tahoma", Font.BOLD, 15));

@@ -46,11 +46,13 @@ public class Mantenimiento extends JPanel {
 	public Mantenimiento() {
 		setLayout(new BorderLayout(0, 0));
 
+		//Panel principal
 		JPanel pMant = new JPanel();
 		pMant.setBackground(new Color(255, 255, 255));
 		add(pMant);
 		pMant.setLayout(new BorderLayout(0, 0));
 
+		//Panel de arriba
 		JPanel pInfoMant = new JPanel();
 		pMant.add(pInfoMant, BorderLayout.NORTH);
 		pInfoMant.setLayout(new BoxLayout(pInfoMant, BoxLayout.X_AXIS));
@@ -74,6 +76,7 @@ public class Mantenimiento extends JPanel {
 		btnAtras.setHorizontalAlignment(SwingConstants.RIGHT);
 		pInfoMant.add(btnAtras);
 
+		//Panel del centro
 		pCent.setBackground(new Color(255, 255, 255));
 		pMant.add(pCent, BorderLayout.CENTER);
 		pCent.setLayout(new BorderLayout(0, 0));
@@ -82,6 +85,13 @@ public class Mantenimiento extends JPanel {
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		pCent.add(lblNewLabel);
+		
+		//Panel de la derecha
+		JPanel pDer=new JPanel();
+		pDer.setLayout(new BoxLayout(pDer, BoxLayout.Y_AXIS));
+		pDer.add(Box.createRigidArea(new Dimension(50,20)));
+		pDer.add(new JLabel("Panel Derecho"));
+		pMant.add(pDer,BorderLayout.EAST);
 
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
