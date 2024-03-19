@@ -37,17 +37,18 @@ public class Base extends JPanel {
 	 * Create the panel.
 	 */
 	public Base() {
+		setBounds(0, 0, 844, 551);
 		setLayout(null);
 		
 		panel.setBackground(Color.WHITE);
-		panel.setBounds(0, 0, 699, 435);
+		panel.setBounds(0, 0, 844, 551);
 		add(panel);
 		panel.setLayout(new BorderLayout(0, 0));
 		
 		//ZONA ARRIBA
 		JPanel panelNorte = new JPanel();
 		panelNorte.setLayout(new BoxLayout(panelNorte, BoxLayout.X_AXIS));
-		panelNorte.add(Box.createRigidArea(new Dimension(200, 50)));
+		panelNorte.add(Box.createRigidArea(new Dimension(295, 50)));
 		panel.add(panelNorte, BorderLayout.NORTH);
 		
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 25));
@@ -116,9 +117,9 @@ public class Base extends JPanel {
         centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
         JLabel label = new JLabel("Panel central");
+        label.setFont(new Font("Tahoma", Font.PLAIN, 15));
         centerPanel.add(label);
         panel.add(centerPanel,BorderLayout.CENTER);
-        
         
         //Acción del boton de Mantenimiento
         btnMant.addActionListener(new ActionListener() {

@@ -23,7 +23,7 @@ import conexiones.Conexion;
 import paneles.Base;
 import java.awt.FlowLayout;
 
-public class VPrincipal extends javax.swing.JFrame {
+public class VPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -36,6 +36,7 @@ public class VPrincipal extends javax.swing.JFrame {
 	/**
 	 * Create the frame.
 	 */
+	//CONSTRUCTOR DE LA VENTANA
 	public VPrincipal() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(240, 70, 870, 600);
@@ -53,11 +54,11 @@ public class VPrincipal extends javax.swing.JFrame {
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(243,290));
 		panel.setBackground(new Color(255, 255, 255));
+		pPrincipal.add(Box.createRigidArea(new Dimension(0, 650)));
 		pPrincipal.add(panel);
 		panel.setLayout(null);
 		
-		pPrincipal.add(Box.createRigidArea(new Dimension(0,50)));
-		
+	
 		JLabel etInicio = new JLabel("INICIAR BASE DE DATOS");
 		etInicio.setFont(new Font("Tahoma", Font.BOLD, 15));
 		etInicio.setHorizontalAlignment(SwingConstants.CENTER);
@@ -86,7 +87,6 @@ public class VPrincipal extends javax.swing.JFrame {
 					if(conectarBase(dbName.getText()) && !dbName.getText().isEmpty()) {
 					p=new Base();
 					contentPane.removeAll();
-					p.setBounds(0, 0, 699, 435);
 					
 					p.setV(VPrincipal.this);
 					

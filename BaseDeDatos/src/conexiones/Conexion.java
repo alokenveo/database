@@ -3,7 +3,6 @@ package conexiones;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-//import jdk.internal.org.jline.terminal.TerminalBuilder;
 
 public class Conexion {
 	private static Connection cn;

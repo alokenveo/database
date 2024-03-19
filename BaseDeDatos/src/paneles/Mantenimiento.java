@@ -45,19 +45,21 @@ public class Mantenimiento extends JPanel {
 	 */
 	public Mantenimiento() {
 		setLayout(new BorderLayout(0, 0));
+		setBounds(0, 0, 654, 501);
 
-		//Panel principal
+		// Panel principal
 		JPanel pMant = new JPanel();
 		pMant.setBackground(new Color(255, 255, 255));
+		pMant.setBounds(0, 0, 654, 501);
 		add(pMant);
 		pMant.setLayout(new BorderLayout(0, 0));
 
-		//Panel de arriba
+		// Panel de arriba
 		JPanel pInfoMant = new JPanel();
 		pMant.add(pInfoMant, BorderLayout.NORTH);
 		pInfoMant.setLayout(new BoxLayout(pInfoMant, BoxLayout.X_AXIS));
 
-		Component rigidArea = Box.createRigidArea(new Dimension(200, 30));
+		Component rigidArea = Box.createRigidArea(new Dimension(230, 30));
 		pInfoMant.add(rigidArea);
 		titleTabla.setHorizontalAlignment(SwingConstants.CENTER);
 		titleTabla.setFont(new Font("Tahoma", Font.BOLD, 13));
@@ -65,8 +67,7 @@ public class Mantenimiento extends JPanel {
 		titleTabla.setPreferredSize(new Dimension(135, 30));
 		pInfoMant.add(titleTabla);
 
-		Component rigidArea_1 = Box.createRigidArea(new Dimension(130, 30));
-		pInfoMant.add(rigidArea_1);
+		pInfoMant.add(Box.createRigidArea(new Dimension(250, 30)));
 
 		ImageIcon iconoOriginal = new ImageIcon("src/recursos/flecha_atras.png");
 		Image scaledImage = iconoOriginal.getImage().getScaledInstance(15, 17, Image.SCALE_SMOOTH);
@@ -76,7 +77,7 @@ public class Mantenimiento extends JPanel {
 		btnAtras.setHorizontalAlignment(SwingConstants.RIGHT);
 		pInfoMant.add(btnAtras);
 
-		//Panel del centro
+		// Panel del centro
 		pCent.setBackground(new Color(255, 255, 255));
 		pMant.add(pCent, BorderLayout.CENTER);
 		pCent.setLayout(new BorderLayout(0, 0));
@@ -85,13 +86,15 @@ public class Mantenimiento extends JPanel {
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		pCent.add(lblNewLabel);
-		
-		//Panel de la derecha
-		JPanel pDer=new JPanel();
+
+		// Panel de la derecha
+		JPanel pDer = new JPanel();
 		pDer.setLayout(new BoxLayout(pDer, BoxLayout.Y_AXIS));
-		pDer.add(Box.createRigidArea(new Dimension(50,20)));
-		pDer.add(new JLabel("Panel Derecho"));
-		pMant.add(pDer,BorderLayout.EAST);
+		pDer.add(Box.createRigidArea(new Dimension(150, 20)));
+		JLabel titleDer = new JLabel("Panel derecho");
+		titleDer.setAlignmentX(CENTER_ALIGNMENT);
+		pDer.add(titleDer);
+		pMant.add(pDer, BorderLayout.EAST);
 
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -156,27 +159,27 @@ public class Mantenimiento extends JPanel {
 							try {
 								Statement statement = con.createStatement();
 								ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName);
-								
-								int numCol=resultSet.getMetaData().getColumnCount();
+
+								int numCol = resultSet.getMetaData().getColumnCount();
 
 								List<Object[]> datos = new ArrayList<>();
-							
+
 								while (resultSet.next()) {
-					                Object[] filaDatos = new Object[numCol];
-					                for (int columna = 1; columna <= numCol; columna++) {
-					                    filaDatos[columna - 1] = resultSet.getObject(columna);
-					                }
-					                datos.add(filaDatos);
-					            }
-																
+									Object[] filaDatos = new Object[numCol];
+									for (int columna = 1; columna <= numCol; columna++) {
+										filaDatos[columna - 1] = resultSet.getObject(columna);
+									}
+									datos.add(filaDatos);
+								}
+
 								Object[][] datosArray = new Object[datos.size()][numCol];
 								for (int i = 0; i < datos.size(); i++) {
-								    datosArray[i] = datos.get(i);
+									datosArray[i] = datos.get(i);
 								}
-								
-								String[] nombresColumnas=new String[numCol];
-								for(int i=0;i<nombresColumnas.length;i++) {
-									nombresColumnas[i]="Columna "+(i+1);
+
+								String[] nombresColumnas = new String[numCol];
+								for (int i = 0; i < nombresColumnas.length; i++) {
+									nombresColumnas[i] = "Columna " + (i + 1);
 								}
 
 								DefaultTableModel model = new DefaultTableModel(datosArray, nombresColumnas);
