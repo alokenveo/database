@@ -26,129 +26,155 @@ import java.awt.FlowLayout;
 public class VPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+
+	// Componentes de la ventana
+	JPanel contentPane;
+	JPanel pPrincipal;
+	JPanel panel;
+	JLabel etInicio;
+	JLabel lblNewLabel;
+	JTextField dbName;
+	JButton btConectar;
+	JLabel etAviso;
+
+	// Atributos
 	private Base p;
-	private JTextField dbName;
-	JLabel etAviso = new JLabel("");
-	
 	private Conexion con;
 
 	/**
 	 * Create the frame.
 	 */
-	//CONSTRUCTOR DE LA VENTANA
+	// CONSTRUCTOR DE LA VENTANA
 	public VPrincipal() {
+		// Inicializaciones
+		contentPane = new JPanel();
+		pPrincipal = new JPanel();
+		panel = new JPanel();
+		etInicio = new JLabel("INICIAR BASE DE DATOS");
+		lblNewLabel = new JLabel("Nombre de la base de datos");
+		dbName = new JTextField();
+		btConectar = new JButton("Conectar");
+		etAviso = new JLabel("");
+
+		// Parámetros de la ventana inicial
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(240, 70, 870, 600);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
+		setTitle("Conexión a base de datos");
 		setContentPane(contentPane);
+
+		// Parámetros del Panel ContentPane
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
-		
-		JPanel pPrincipal = new JPanel();
+
+		// Parámtero del Panel pPrincipal
 		pPrincipal.setBackground(new Color(0, 128, 255));
-		contentPane.add(pPrincipal);
 		pPrincipal.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(243,290));
+
+		// Parámetros de panel
+		panel.setPreferredSize(new Dimension(243, 290));
 		panel.setBackground(new Color(255, 255, 255));
-		pPrincipal.add(Box.createRigidArea(new Dimension(0, 650)));
-		pPrincipal.add(panel);
 		panel.setLayout(null);
-		
-	
-		JLabel etInicio = new JLabel("INICIAR BASE DE DATOS");
+
+		// Parámetros del Label de presentación
 		etInicio.setFont(new Font("Tahoma", Font.BOLD, 15));
 		etInicio.setHorizontalAlignment(SwingConstants.CENTER);
 		etInicio.setBounds(20, 11, 207, 26);
-		panel.add(etInicio);
-		
+
+		// Esto es donde se escribe el nombre de la base de datos
+		dbName.setBounds(31, 136, 185, 26);
+		dbName.setColumns(10);
+
+		// Parámetros del label de aviso
 		etAviso.setFont(new Font("Tahoma", Font.BOLD, 11));
 		etAviso.setForeground(Color.RED);
 		etAviso.setHorizontalAlignment(SwingConstants.CENTER);
 		etAviso.setBounds(34, 254, 193, 23);
-		panel.add(etAviso);
+
+		//Parámetro del label de info
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setBounds(45, 99, 161, 26);
 		
-		
-		//Esto es donde se escribe el nombre de la base de datos
-		dbName = new JTextField();
-		dbName.setToolTipText("");
-		dbName.setBounds(31, 136, 185, 26);
-		panel.add(dbName);
-		dbName.setColumns(10);
-		
-		
-		JButton btConectar = new JButton("Conectar");
+		//Parámetros del botón conectar
+		btConectar.setBounds(83, 202, 89, 23);
+
+		/*
+		 * ACCIONES
+		 */
+		//Acción del bóton Conectar
 		btConectar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if(conectarBase(dbName.getText()) && !dbName.getText().isEmpty()) {
-					p=new Base();
-					contentPane.removeAll();
-					
-					p.setV(VPrincipal.this);
-					
-					contentPane.add(p);
-					contentPane.revalidate();
-					contentPane.repaint();
-					
-					}
-					else {
+					if (conectarBase(dbName.getText()) && !dbName.getText().isEmpty()) {
+						p = new Base();
+						contentPane.removeAll();
+
+						p.setV(VPrincipal.this);
+
+						contentPane.add(p);
+						contentPane.revalidate();
+						contentPane.repaint();
+
+					} else {
 						mostrarMensaje("Error. No es posible conectarse");
 					}
 				} catch (ClassNotFoundException | SQLException e1) {
 				}
 			}
 		});
-		btConectar.setBounds(83, 202, 89, 23);
-		panel.add(btConectar);
 		
-		JLabel lblNewLabel = new JLabel("Nombre de la base de datos");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(45, 99, 161, 26);
-		panel.add(lblNewLabel);
-		
+		//Acción sobre el text field
 		dbName.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                btConectar.doClick();
-            }
-        });
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				btConectar.doClick();
+			}
+		});
+
+		// Lo añadimos a su contenedor
+		panel.add(etInicio);
+		panel.add(etAviso);
+		panel.add(lblNewLabel);
+		panel.add(dbName);		
+		panel.add(btConectar);
+		pPrincipal.add(Box.createRigidArea(new Dimension(0, 650)));
+		pPrincipal.add(panel);
+		contentPane.add(pPrincipal);
 	}
 
-	private boolean conectarBase(String dbName) throws ClassNotFoundException, SQLException {
-		con=new Conexion(dbName);
-		
-		Connection cn=con.getConnection();
-		if (cn != null) {
-			return true;
-		} else {
-			
-			return false;
-		}
-	}
-	
+	//GETTERS
 	public Base getP() {
 		return p;
 	}
-	
+
 	public Conexion getCon() {
 		return con;
 	}
 	
-	private void mostrarMensaje(String mensaje) {
-        etAviso.setText(mensaje);
+	//MÉTODOS PRIVADOS
+	//Método para hacer la conexión
+	private boolean conectarBase(String dbName) throws ClassNotFoundException, SQLException {
+		con = new Conexion(dbName);
+		Connection cn = con.getConnection();
+		if (cn != null) {
+			return true;
+		} else {
 
-        Timer timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                etAviso.setText("");
-                ((Timer)e.getSource()).stop();
-            }
-        });
-        timer.setRepeats(false);
-        timer.start();
-    }
+			return false;
+		}
+	}
+
+	//Método para mostrar el mensaje de aviso
+	private void mostrarMensaje(String mensaje) {
+		etAviso.setText(mensaje);
+
+		Timer timer = new Timer(1000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				etAviso.setText("");
+				((Timer) e.getSource()).stop();
+			}
+		});
+		timer.setRepeats(false);
+		timer.start();
+	}
 }

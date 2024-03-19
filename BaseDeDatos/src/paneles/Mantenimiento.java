@@ -22,6 +22,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
@@ -32,47 +33,63 @@ public class Mantenimiento extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	//Componentes de la ventana
+	JPanel pMant;
+	JPanel pInfoMant;
+	ImageIcon iconoOriginal;
+	Image scaledImage ;
+	ImageIcon icon;
+	JButton btnAtras;
+	JPanel pCent;
+	JLabel titleTabla;
+	JPanel pDer;
+	JButton add;
+	JButton borrar;
+	
+	//Atributos
 	private Base b;
 	private JPanel panelAntiguo;
 	private JPanel panelMant;
 	private Conexion c;
-
-	JLabel titleTabla = new JLabel("Tabla");
-	JPanel pCent = new JPanel();
+	
 
 	/**
 	 * Create the panel.
 	 */
 	public Mantenimiento() {
+		//Inicializaciones
+		pMant = new JPanel();
+		pInfoMant = new JPanel();
+		iconoOriginal = new ImageIcon("src/recursos/flecha_atras.png");
+		scaledImage = iconoOriginal.getImage().getScaledInstance(15, 17, Image.SCALE_SMOOTH);
+		icon = new ImageIcon(scaledImage);
+		titleTabla = new JLabel("Tabla");
+		btnAtras = new JButton(icon);
+		pCent = new JPanel();
+		pDer = new JPanel();
+		add=new JButton("Añadir fila");
+		borrar=new JButton("Borrar fila");
+		
+		//Parámetros de la ventana inicial
 		setLayout(new BorderLayout(0, 0));
 		setBounds(0, 0, 654, 501);
 
 		// Panel principal
-		JPanel pMant = new JPanel();
 		pMant.setBackground(new Color(255, 255, 255));
 		pMant.setBounds(0, 0, 654, 501);
-		add(pMant);
 		pMant.setLayout(new BorderLayout(0, 0));
 
-		// Panel de arriba
-		JPanel pInfoMant = new JPanel();
-		pMant.add(pInfoMant, BorderLayout.NORTH);
+		// Panel de arriba		
 		pInfoMant.setLayout(new BoxLayout(pInfoMant, BoxLayout.X_AXIS));
-
-		Component rigidArea = Box.createRigidArea(new Dimension(230, 30));
-		pInfoMant.add(rigidArea);
+		pInfoMant.add(Box.createRigidArea(new Dimension(230, 30)));
+		pMant.add(pInfoMant, BorderLayout.NORTH);
+		
 		titleTabla.setHorizontalAlignment(SwingConstants.CENTER);
 		titleTabla.setFont(new Font("Tahoma", Font.BOLD, 13));
-
 		titleTabla.setPreferredSize(new Dimension(135, 30));
 		pInfoMant.add(titleTabla);
 
 		pInfoMant.add(Box.createRigidArea(new Dimension(250, 30)));
-
-		ImageIcon iconoOriginal = new ImageIcon("src/recursos/flecha_atras.png");
-		Image scaledImage = iconoOriginal.getImage().getScaledInstance(15, 17, Image.SCALE_SMOOTH);
-		ImageIcon icon = new ImageIcon(scaledImage);
-		JButton btnAtras = new JButton(icon);
 
 		btnAtras.setHorizontalAlignment(SwingConstants.RIGHT);
 		pInfoMant.add(btnAtras);
@@ -88,20 +105,42 @@ public class Mantenimiento extends JPanel {
 		pCent.add(lblNewLabel);
 
 		// Panel de la derecha
-		JPanel pDer = new JPanel();
 		pDer.setLayout(new BoxLayout(pDer, BoxLayout.Y_AXIS));
 		pDer.add(Box.createRigidArea(new Dimension(150, 20)));
-		JLabel titleDer = new JLabel("Panel derecho");
+		
+		JLabel titleDer = new JLabel("<html><u>Panel derecho</u></html>");
+		titleDer.setFont(new Font("Tahoma", Font.BOLD, 13));
+		titleDer.setHorizontalAlignment(SwingConstants.CENTER);
 		titleDer.setAlignmentX(CENTER_ALIGNMENT);
+		titleDer.setPreferredSize(new Dimension(150,40));
 		pDer.add(titleDer);
+		
+		//Botones de mantenimiento
+		add.setAlignmentX(0.6f);
+		borrar.setAlignmentX(0.6f);
+		
+		pDer.add(Box.createRigidArea(new Dimension(0,20)));
+		pDer.add(add);
+		pDer.add(Box.createRigidArea(new Dimension(0,20)));
+		pDer.add(borrar);
 		pMant.add(pDer, BorderLayout.EAST);
 
+		/*
+		 * ACCIONES
+		 */
+		
+		//Acción del boton de atrás
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
+		
+		
+		//Añadimos componetes a sus contenedores
+		add(pMant);
 	}
 
+	//SETTERS
 	public void setB(Base b) {
 		this.b = b;
 		this.panelAntiguo = b.getPanelIzq();
@@ -109,6 +148,7 @@ public class Mantenimiento extends JPanel {
 		nuevoPanel();
 	}
 
+	//MÉTODOS PRIVADOS
 	private void nuevoPanel() {
 		// Creo el nuevo JPanel
 		panelMant = new JPanel();
@@ -142,72 +182,79 @@ public class Mantenimiento extends JPanel {
 			String catalog = con.getCatalog();
 			ResultSet resultSet = metaData.getTables(catalog, null, "%", new String[] { "TABLE" });
 
-			int count = 0;
 			while (resultSet.next()) {
 				String tableName = resultSet.getString("TABLE_NAME");
 				if (!tableName.startsWith("trace_xe")) {
-					// System.out.println("Tabla encontrada: " + tableName);
 
 					JButton bot = new JButton(tableName);
 					bot.addActionListener(new ActionListener() {
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							// TODO
-							titleTabla.setText(tableName);
-							pCent.removeAll();
-							try {
-								Statement statement = con.createStatement();
-								ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName);
-
-								int numCol = resultSet.getMetaData().getColumnCount();
-
-								List<Object[]> datos = new ArrayList<>();
-
-								while (resultSet.next()) {
-									Object[] filaDatos = new Object[numCol];
-									for (int columna = 1; columna <= numCol; columna++) {
-										filaDatos[columna - 1] = resultSet.getObject(columna);
-									}
-									datos.add(filaDatos);
-								}
-
-								Object[][] datosArray = new Object[datos.size()][numCol];
-								for (int i = 0; i < datos.size(); i++) {
-									datosArray[i] = datos.get(i);
-								}
-
-								String[] nombresColumnas = new String[numCol];
-								for (int i = 0; i < nombresColumnas.length; i++) {
-									nombresColumnas[i] = "Columna " + (i + 1);
-								}
-
-								DefaultTableModel model = new DefaultTableModel(datosArray, nombresColumnas);
-								JTable tablaBase = new JTable(model);
-								tablaBase.setLayout(pCent.getLayout());
-
-								pCent.add(tablaBase, BorderLayout.CENTER);
-								pCent.revalidate();
-								pCent.repaint();
-							} catch (SQLException er) {
-								System.out.println(er.getMessage());
-							}
+							mostrarTabla(con,tableName);
 						}
 					});
 					bot.setAlignmentX(0.6f);
 					panelMant.add(bot);
 					panelMant.add(Box.createRigidArea(new Dimension(0, 20)));
-
-					count++;
 				}
 			}
 			panelMant.revalidate();
 			panelMant.repaint();
-
-			// System.out.println("Número total de tablas: " + count);
 		} catch (ClassNotFoundException | SQLException e) {
 		}
+	}
+	
+	private void mostrarTabla(Connection c,String tNom) {
+		titleTabla.setText(tNom);
+		pCent.removeAll();
+		try {
+			//Sentencia y resultado
+			Statement statement = c.createStatement();
+			ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tNom);
 
+			int numCol = resultSet.getMetaData().getColumnCount();
+
+			//Nombre de las columnas
+			String[] nombresColumnas = new String[numCol];
+			ResultSet resCol=c.getMetaData().getColumns(null, null, tNom, null);
+			
+			int cont=0;
+			while(resCol.next()) {
+				nombresColumnas[cont]=resCol.getString("COLUMN_NAME");
+				cont++;
+			}
+			resCol.close();
+			
+			
+			//Datos de la tabla
+			List<Object[]> datos = new ArrayList<>();
+			while (resultSet.next()) {
+				Object[] filaDatos = new Object[numCol];
+				for (int columna = 1; columna <= numCol; columna++) {
+					filaDatos[columna - 1] = resultSet.getObject(columna);
+				}
+				datos.add(filaDatos);
+			}
+			resultSet.close();
+			
+			Object[][] datosArray = new Object[datos.size()][numCol];
+			for (int i = 0; i < datos.size(); i++) {
+				datosArray[i] = datos.get(i);
+			}
+
+
+			//Creación de la tabla y su vista
+			DefaultTableModel model = new DefaultTableModel(datosArray, nombresColumnas);
+			JTable tablaBase = new JTable(model);
+			JScrollPane sc=new JScrollPane(tablaBase);
+
+			pCent.add(sc, BorderLayout.CENTER);
+			pCent.revalidate();
+			pCent.repaint();
+		} catch (SQLException er) {
+			System.out.println(er.getMessage());
+		}
 	}
 
 }
