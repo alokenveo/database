@@ -20,6 +20,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -33,11 +34,11 @@ public class Mantenimiento extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	//Componentes de la ventana
+	// Componentes de la ventana
 	JPanel pMant;
 	JPanel pInfoMant;
 	ImageIcon iconoOriginal;
-	Image scaledImage ;
+	Image scaledImage;
 	ImageIcon icon;
 	JButton btnAtras;
 	JPanel pCent;
@@ -45,19 +46,19 @@ public class Mantenimiento extends JPanel {
 	JPanel pDer;
 	JButton add;
 	JButton borrar;
-	
-	//Atributos
+
+	// Atributos
 	private Base b;
 	private JPanel panelAntiguo;
 	private JPanel panelMant;
 	private Conexion c;
-	
+	private NuevaFila nv;
 
 	/**
 	 * Create the panel.
 	 */
 	public Mantenimiento() {
-		//Inicializaciones
+		// Inicializaciones
 		pMant = new JPanel();
 		pInfoMant = new JPanel();
 		iconoOriginal = new ImageIcon("src/recursos/flecha_atras.png");
@@ -67,10 +68,10 @@ public class Mantenimiento extends JPanel {
 		btnAtras = new JButton(icon);
 		pCent = new JPanel();
 		pDer = new JPanel();
-		add=new JButton("Añadir fila");
-		borrar=new JButton("Borrar fila");
-		
-		//Parámetros de la ventana inicial
+		add = new JButton("Añadir fila");
+		borrar = new JButton("Borrar fila");
+
+		// Parámetros de la ventana inicial
 		setLayout(new BorderLayout(0, 0));
 		setBounds(0, 0, 654, 501);
 
@@ -78,19 +79,19 @@ public class Mantenimiento extends JPanel {
 		pMant.setBackground(new Color(255, 255, 255));
 		pMant.setBounds(0, 0, 654, 501);
 		pMant.setLayout(new BorderLayout(0, 0));
-
-		// Panel de arriba		
-		pInfoMant.setLayout(new BoxLayout(pInfoMant, BoxLayout.X_AXIS));
-		pInfoMant.add(Box.createRigidArea(new Dimension(230, 30)));
 		pMant.add(pInfoMant, BorderLayout.NORTH);
-		
+
+		//Panel de arriba
+		pInfoMant.setLayout(new BoxLayout(pInfoMant, BoxLayout.X_AXIS));
+
 		titleTabla.setHorizontalAlignment(SwingConstants.CENTER);
 		titleTabla.setFont(new Font("Tahoma", Font.BOLD, 13));
 		titleTabla.setPreferredSize(new Dimension(135, 30));
+		pInfoMant.add(Box.createRigidArea(new Dimension(235, 40)));
 		pInfoMant.add(titleTabla);
-
-		pInfoMant.add(Box.createRigidArea(new Dimension(250, 30)));
-
+		
+		pInfoMant.add(Box.createRigidArea(new Dimension(250, 40)));
+		
 		btnAtras.setHorizontalAlignment(SwingConstants.RIGHT);
 		pInfoMant.add(btnAtras);
 
@@ -107,40 +108,48 @@ public class Mantenimiento extends JPanel {
 		// Panel de la derecha
 		pDer.setLayout(new BoxLayout(pDer, BoxLayout.Y_AXIS));
 		pDer.add(Box.createRigidArea(new Dimension(150, 20)));
-		
+
 		JLabel titleDer = new JLabel("<html><u>Panel derecho</u></html>");
 		titleDer.setFont(new Font("Tahoma", Font.BOLD, 13));
 		titleDer.setHorizontalAlignment(SwingConstants.CENTER);
 		titleDer.setAlignmentX(CENTER_ALIGNMENT);
-		titleDer.setPreferredSize(new Dimension(150,40));
+		titleDer.setPreferredSize(new Dimension(150, 40));
 		pDer.add(titleDer);
-		
-		//Botones de mantenimiento
+
+		// Botones de mantenimiento
 		add.setAlignmentX(0.6f);
 		borrar.setAlignmentX(0.6f);
-		
-		pDer.add(Box.createRigidArea(new Dimension(0,20)));
+
+		pDer.add(Box.createRigidArea(new Dimension(0, 20)));
 		pDer.add(add);
-		pDer.add(Box.createRigidArea(new Dimension(0,20)));
+		pDer.add(Box.createRigidArea(new Dimension(0, 20)));
 		pDer.add(borrar);
 		pMant.add(pDer, BorderLayout.EAST);
 
 		/*
 		 * ACCIONES
 		 */
-		
-		//Acción del boton de atrás
+
+		// Acción del boton de atrás
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		
-		
-		//Añadimos componetes a sus contenedores
+		//Acción del botón de añadir fila
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				nv=new NuevaFila();
+				nv.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				nv.setVisible(true);
+			}
+		});
+
+		// Añadimos componetes a sus contenedores
 		add(pMant);
 	}
 
-	//SETTERS
+	// SETTERS
 	public void setB(Base b) {
 		this.b = b;
 		this.panelAntiguo = b.getPanelIzq();
@@ -148,7 +157,7 @@ public class Mantenimiento extends JPanel {
 		nuevoPanel();
 	}
 
-	//MÉTODOS PRIVADOS
+	// MÉTODOS PRIVADOS
 	private void nuevoPanel() {
 		// Creo el nuevo JPanel
 		panelMant = new JPanel();
@@ -191,7 +200,7 @@ public class Mantenimiento extends JPanel {
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							mostrarTabla(con,tableName);
+							mostrarTabla(con, tableName);
 						}
 					});
 					bot.setAlignmentX(0.6f);
@@ -204,30 +213,29 @@ public class Mantenimiento extends JPanel {
 		} catch (ClassNotFoundException | SQLException e) {
 		}
 	}
-	
-	private void mostrarTabla(Connection c,String tNom) {
+
+	private void mostrarTabla(Connection c, String tNom) {
 		titleTabla.setText(tNom);
 		pCent.removeAll();
 		try {
-			//Sentencia y resultado
+			// Sentencia y resultado
 			Statement statement = c.createStatement();
 			ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tNom);
 
 			int numCol = resultSet.getMetaData().getColumnCount();
 
-			//Nombre de las columnas
+			// Nombre de las columnas
 			String[] nombresColumnas = new String[numCol];
-			ResultSet resCol=c.getMetaData().getColumns(null, null, tNom, null);
-			
-			int cont=0;
-			while(resCol.next()) {
-				nombresColumnas[cont]=resCol.getString("COLUMN_NAME");
+			ResultSet resCol = c.getMetaData().getColumns(null, null, tNom, null);
+
+			int cont = 0;
+			while (resCol.next()) {
+				nombresColumnas[cont] = resCol.getString("COLUMN_NAME");
 				cont++;
 			}
 			resCol.close();
-			
-			
-			//Datos de la tabla
+
+			// Datos de la tabla
 			List<Object[]> datos = new ArrayList<>();
 			while (resultSet.next()) {
 				Object[] filaDatos = new Object[numCol];
@@ -237,17 +245,16 @@ public class Mantenimiento extends JPanel {
 				datos.add(filaDatos);
 			}
 			resultSet.close();
-			
+
 			Object[][] datosArray = new Object[datos.size()][numCol];
 			for (int i = 0; i < datos.size(); i++) {
 				datosArray[i] = datos.get(i);
 			}
 
-
-			//Creación de la tabla y su vista
+			// Creación de la tabla y su vista
 			DefaultTableModel model = new DefaultTableModel(datosArray, nombresColumnas);
 			JTable tablaBase = new JTable(model);
-			JScrollPane sc=new JScrollPane(tablaBase);
+			JScrollPane sc = new JScrollPane(tablaBase);
 
 			pCent.add(sc, BorderLayout.CENTER);
 			pCent.revalidate();

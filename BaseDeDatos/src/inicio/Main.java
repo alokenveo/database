@@ -14,7 +14,7 @@ public class Main {
 				try {
 					VPrincipal frame = new VPrincipal();
 					frame.setVisible(true);
-					//frame.setResizable(false);
+					frame.setResizable(false);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
