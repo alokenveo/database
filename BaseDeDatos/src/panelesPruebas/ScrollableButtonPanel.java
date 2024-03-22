@@ -20,7 +20,7 @@ public class ScrollableButtonPanel extends JFrame {
         buttonPanel.setLayout(new GridLayout(0, 1)); // GridLayout con una sola columna
 
         // Agregar varios botones al panel
-        for (int i = 1; i <= 9; i++) {
+        for (int i = 1; i <= 20; i++) {
             JButton button = new JButton("Botón " + i);
             buttonPanel.add(button);
         }

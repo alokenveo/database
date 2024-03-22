@@ -22,6 +22,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,6 +32,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import conexiones.Conexion;
 import conexiones.Operaciones;
@@ -57,12 +59,13 @@ public class Mantenimiento extends JPanel {
 	private Base b;
 	private JPanel panelAntiguo;
 	private JPanel panelMant;
-	DefaultTableModel model;
-	JTable tablaBase;
+	private DefaultTableModel model;
+	private JTable tablaBase;
+	private JScrollPane sc;
 	private Conexion c;
 	private Connection cn;
 	private NuevaFila nv;
-	private String nombreTabla;
+	private String nombreTabla = "";
 
 	/**
 	 * Create the panel.
@@ -150,15 +153,22 @@ public class Mantenimiento extends JPanel {
 		// Acción del boton de atrás
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// TODO
 			}
 		});
 
 		// Acción del botón de añadir fila
 		add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				nv = new NuevaFila();
-				nv.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				nv.setVisible(true);
+				if (!nombreTabla.isEmpty()) {
+					nv = new NuevaFila();
+					nv.setM(Mantenimiento.this);
+					nv.setValores(cn, nombreTabla);
+					nv.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					nv.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(null, "No se ha seleccionado una tabla");
+				}
 			}
 		});
 
@@ -167,10 +177,18 @@ public class Mantenimiento extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int selectedRow = tablaBase.getSelectedRow();
-				if (selectedRow != -1) {
-					model.removeRow(selectedRow);
-					Operaciones.borrarFila(cn, nombreTabla);
+				if (!nombreTabla.isEmpty()) {
+					int selectedRow = tablaBase.getSelectedRow();
+					if (selectedRow != -1) {
+						TableColumnModel columnModel = tablaBase.getColumnModel();
+						Object columnName = columnModel.getColumn(0).getHeaderValue();
+						Object valor = tablaBase.getValueAt(selectedRow, 0);
+						if (Operaciones.borrarFila(cn, nombreTabla, columnName, valor)) {
+							model.removeRow(selectedRow);
+						}
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "No se ha seleccionado una tabla");
 				}
 			}
 		});
@@ -188,7 +206,23 @@ public class Mantenimiento extends JPanel {
 		add(pMant);
 	}
 
-	// SETTERS
+	// GETTERS Y SETTERS
+	public JScrollPane getSc() {
+		return sc;
+	}
+
+	public JTable getTablaBase() {
+		return tablaBase;
+	}
+
+	public DefaultTableModel getModel() {
+		return model;
+	}
+
+	public JPanel getPCent() {
+		return pCent;
+	}
+
 	public void setB(Base b) {
 		this.b = b;
 		this.panelAntiguo = b.getPanelIzq();
@@ -305,7 +339,7 @@ public class Mantenimiento extends JPanel {
 			DefaultTableModel tOriginal = new DefaultTableModel(datosArray, nombresColumnas);
 
 			tablaBase = new JTable(model);
-			JScrollPane sc = new JScrollPane(tablaBase);
+			sc = new JScrollPane(tablaBase);
 
 			pCent.add(sc, BorderLayout.CENTER);
 			pCent.revalidate();
@@ -332,9 +366,9 @@ public class Mantenimiento extends JPanel {
 			System.out.println(er.getMessage());
 		}
 	}
-	
+
 	private void filtrarBusqueda() {
-		//TODO
+		// TODO
 	}
 
 }
