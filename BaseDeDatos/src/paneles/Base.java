@@ -14,7 +14,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import conexiones.Conexion;
@@ -140,12 +139,6 @@ public class Base extends JPanel {
 		});
 
 		// Añdimos los componentes a sus contedores
-
-		/*
-		 * JScrollPane jsc = new JScrollPane(panelIzq);
-		 * jsc.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		 * panel.add(jsc, BorderLayout.WEST);
-		 */
 		panel.add(panelIzq, BorderLayout.WEST);
 		add(panel);
 	}
