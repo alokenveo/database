@@ -194,7 +194,6 @@ public class Mantenimiento extends JPanel {
 		// Acción del boton de atrás
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO
 				b.getPanel().remove(jsc);
 				b.getPanel().remove(Mantenimiento.this);
 				b.getPanel().add(b.getPanelIzq(), BorderLayout.WEST);

@@ -2,6 +2,8 @@ package inicio;
 
 import java.awt.EventQueue;
 
+import javax.swing.JOptionPane;
+
 public class Main {
 
 	/**
@@ -16,7 +18,7 @@ public class Main {
 					frame.setVisible(true);
 					frame.setResizable(false);
 				} catch (Exception e) {
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, e.getMessage());
 				}
 			}
 		});
