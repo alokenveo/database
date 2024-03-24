@@ -6,7 +6,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -45,6 +48,8 @@ public class NuevaFila extends JDialog {
 	private Mantenimiento m;
 	private boolean nuevo;
 	private int filaSeleccionada;
+	private Object columnName;
+	private Object valor;
 
 	/**
 	 * Create the dialog.
@@ -97,6 +102,16 @@ public class NuevaFila extends JDialog {
 							}
 						} else {
 							// TODO
+							for (int i = 0; i < campos.length; i++) {
+								if (!campos[i].getValor().equals(fields[i].getText())) {
+									campos[i].setValor(fields[i].getText());
+									if (Operaciones.actualizarTabla(cn, nombreTabla, campos, i, columnName, valor)) {
+										//m.getModel().fireTableDataChanged();
+										m.mostrarTabla(cn, nombreTabla);
+									}
+								}
+								dispose();
+							}
 						}
 					}
 				});
@@ -157,7 +172,10 @@ public class NuevaFila extends JDialog {
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM " + nombreTabla);
 				ResultSetMetaData metadata = resultSet.getMetaData();
 				int numeroCol = metadata.getColumnCount();
-				contenido.setLayout(new GridLayout(0, 2, 10, 10));
+				contenido.setLayout(new GridBagLayout());
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.anchor = GridBagConstraints.WEST;
+		        gbc.insets = new Insets(5, 5, 5, 5);
 
 				// 2º Obtennemos el número de los campos
 				campos = new Campos[numeroCol];
@@ -171,9 +189,14 @@ public class NuevaFila extends JDialog {
 					campos[cont].setNomCampo(nomCampo);
 
 					// 3º Añadimos los campos a rellenar
-					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "));
+					gbc.gridx = 0;
+		            gbc.gridy = cont;
+					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "),gbc);
+					
 					fields[cont] = new JTextField();
-					contenido.add(fields[cont]);
+					fields[cont].setPreferredSize(new Dimension(135,30));
+					gbc.gridx=1;
+					contenido.add(fields[cont],gbc);
 
 					cont++;
 				}
@@ -189,7 +212,10 @@ public class NuevaFila extends JDialog {
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM " + nombreTabla);
 				ResultSetMetaData metadata = resultSet.getMetaData();
 				int numeroCol = metadata.getColumnCount();
-				contenido.setLayout(new GridLayout(0, 2, 10, 10));
+				contenido.setLayout(new GridBagLayout());
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.anchor = GridBagConstraints.WEST;
+		        gbc.insets = new Insets(5, 5, 5, 5);
 
 				// 2º Obtennemos el número de los campos
 				campos = new Campos[numeroCol];
@@ -203,9 +229,14 @@ public class NuevaFila extends JDialog {
 					campos[cont].setNomCampo(nomCampo);
 
 					// 3º Añadimos los campos a rellenar
-					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "));
+					gbc.gridx = 0;
+		            gbc.gridy = cont;
+					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "),gbc);
+					
 					fields[cont] = new JTextField();
-					contenido.add(fields[cont]);
+					fields[cont].setPreferredSize(new Dimension(135,30));
+					gbc.gridx=1;
+					contenido.add(fields[cont],gbc);
 
 					cont++;
 				}
@@ -218,6 +249,7 @@ public class NuevaFila extends JDialog {
 						filaEncontrada = true;
 						for (int i = 0; i < fields.length; i++) {
 							fields[i].setText(res.getString(i + 1));
+							campos[i].setValor(res.getString(i + 1));
 						}
 					}
 					cont++;
@@ -229,5 +261,10 @@ public class NuevaFila extends JDialog {
 				System.out.println(e.getMessage());
 			}
 		}
+	}
+
+	public void setArgumentos(Object columnName, Object valor) {
+		this.columnName = columnName;
+		this.valor = valor;
 	}
 }

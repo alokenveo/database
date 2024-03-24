@@ -207,10 +207,18 @@ public class Mantenimiento extends JPanel {
 				if (!nombreTabla.isEmpty()) {
 					int selectedRow = tablaBase.getSelectedRow();
 					if (selectedRow != -1) {
+						TableColumnModel columnModel = tablaBase.getColumnModel();
+						Object columnName = columnModel.getColumn(0).getHeaderValue();
+						Object valor = tablaBase.getValueAt(selectedRow, 0);
+						if (valor instanceof String) {
+							valor = "'" + valor + "'";
+						}
+						
 						nv = new NuevaFila();
 						nv.setM(Mantenimiento.this);
 						nv.setFilaSeleccionada(selectedRow);
 						nv.setValores(cn, nombreTabla, false);
+						nv.setArgumentos(columnName,valor);
 						nv.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 						nv.setVisible(true);
 					} else {
@@ -393,7 +401,7 @@ public class Mantenimiento extends JPanel {
 	}
 
 	@SuppressWarnings("serial")
-	private void mostrarTabla(Connection c, String tNom) {
+	public void mostrarTabla(Connection c, String tNom) {
 		titleTabla.setText(tNom);
 		pCent.removeAll();
 		try {
@@ -446,24 +454,6 @@ public class Mantenimiento extends JPanel {
 			pCent.add(sc, BorderLayout.CENTER);
 			pCent.revalidate();
 			pCent.repaint();
-
-			model.addTableModelListener(new TableModelListener() {
-				@Override
-				public void tableChanged(TableModelEvent e) {
-					int fila = e.getFirstRow();
-					int column = e.getColumn();
-					if (e.getType() == TableModelEvent.UPDATE) {
-						if (column != TableModelEvent.ALL_COLUMNS && fila != TableModelEvent.HEADER_ROW) {
-							Object antiguoDato = tOriginal.getValueAt(fila, column);
-							Object nuevoDato = model.getValueAt(fila, column);
-							Object[] datosActualizacion = { tNom, nombresColumnas[column], nuevoDato, antiguoDato };
-							Operaciones.actualizarTabla(c, datosActualizacion);
-							sc.revalidate();
-							sc.repaint();
-						}
-					}
-				}
-			});
 		} catch (SQLException er) {
 			System.out.println(er.getMessage());
 		}

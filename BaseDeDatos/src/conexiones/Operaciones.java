@@ -9,8 +9,22 @@ import javax.swing.JOptionPane;
 import auxiliares.Campos;
 
 public class Operaciones {
-	public static boolean actualizarTabla(Connection cn, Object[] o) {
+	public static boolean actualizarTabla(Connection cn, String tNom, Campos[] c, int colModificada, Object nomCol,
+			Object val) {
 		if (cn != null) {
+			StringBuilder sentencia = new StringBuilder("UPDATE " + tNom + " SET ");
+			sentencia.append(c[colModificada].getNomCampo()).append(" = '").append(c[colModificada].getValor())
+					.append("'");
+			sentencia.append(" WHERE ").append(nomCol).append(" = ").append(val);
+
+			try {
+				Statement sent = cn.createStatement();
+				sent.executeUpdate(sentencia.toString());
+				return true;
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(null, "No se puede actualizar esta fila\n" + e.getMessage());
+				return false;
+			}
 		}
 		return false;
 	}
@@ -48,7 +62,7 @@ public class Operaciones {
 			try {
 				Statement declaración = cn.createStatement();
 				int filasEliminadas = declaración.executeUpdate(sentencia);
-				if(filasEliminadas>0) {
+				if (filasEliminadas > 0) {
 					return true;
 				}
 			} catch (SQLException e) {
