@@ -58,7 +58,6 @@ public class Operaciones {
 	public static boolean borrarFila(Connection cn, String tNom, Object nomCol, Object val) {
 		if (cn != null) {
 			String sentencia = "DELETE from " + tNom + " WHERE " + nomCol + "=" + val;
-			System.out.println(sentencia);
 			try {
 				Statement declaración = cn.createStatement();
 				int filasEliminadas = declaración.executeUpdate(sentencia);

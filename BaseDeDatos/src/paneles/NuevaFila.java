@@ -50,6 +50,7 @@ public class NuevaFila extends JDialog {
 	private int filaSeleccionada;
 	private Object columnName;
 	private Object valor;
+	private JLabel lab;
 
 	/**
 	 * Create the dialog.
@@ -85,7 +86,7 @@ public class NuevaFila extends JDialog {
 
 									// Si hay algún campo que no se ha rellenado, pongo esta bandera
 									if (fields[i].getText().isEmpty()) {
-										camposVacios = true;
+										setCamposVacios(true);
 									}
 								}
 								if (Operaciones.insertarFila(cn, nombreTabla, campos)) {
@@ -101,12 +102,10 @@ public class NuevaFila extends JDialog {
 								}
 							}
 						} else {
-							// TODO
 							for (int i = 0; i < campos.length; i++) {
 								if (!campos[i].getValor().equals(fields[i].getText())) {
 									campos[i].setValor(fields[i].getText());
 									if (Operaciones.actualizarTabla(cn, nombreTabla, campos, i, columnName, valor)) {
-										//m.getModel().fireTableDataChanged();
 										m.mostrarTabla(cn, nombreTabla);
 									}
 								}
@@ -138,7 +137,7 @@ public class NuevaFila extends JDialog {
 		pArriba.setLayout(new BoxLayout(pArriba, BoxLayout.X_AXIS));
 		pArriba.add(Box.createRigidArea(new Dimension(0, 45)));
 
-		JLabel lab = new JLabel("<html><u>Añadir nueva fila</u></html>");
+		lab = new JLabel("<html><u>Añadir nueva fila</u></html>");
 		lab.setAlignmentX(Component.CENTER_ALIGNMENT);
 		lab.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lab.setHorizontalAlignment(SwingConstants.CENTER);
@@ -164,6 +163,14 @@ public class NuevaFila extends JDialog {
 		this.filaSeleccionada = filaSeleccionada;
 	}
 
+	public boolean isCamposVacios() {
+		return camposVacios;
+	}
+
+	public void setCamposVacios(boolean camposVacios) {
+		this.camposVacios = camposVacios;
+	}
+
 	private void rellenarTabla(boolean nuevo) {
 		if (nuevo)
 			try {
@@ -175,7 +182,7 @@ public class NuevaFila extends JDialog {
 				contenido.setLayout(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 				gbc.anchor = GridBagConstraints.WEST;
-		        gbc.insets = new Insets(5, 5, 5, 5);
+				gbc.insets = new Insets(5, 5, 5, 5);
 
 				// 2º Obtennemos el número de los campos
 				campos = new Campos[numeroCol];
@@ -190,13 +197,13 @@ public class NuevaFila extends JDialog {
 
 					// 3º Añadimos los campos a rellenar
 					gbc.gridx = 0;
-		            gbc.gridy = cont;
-					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "),gbc);
-					
+					gbc.gridy = cont;
+					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "), gbc);
+
 					fields[cont] = new JTextField();
-					fields[cont].setPreferredSize(new Dimension(135,30));
-					gbc.gridx=1;
-					contenido.add(fields[cont],gbc);
+					fields[cont].setPreferredSize(new Dimension(135, 30));
+					gbc.gridx = 1;
+					contenido.add(fields[cont], gbc);
 
 					cont++;
 				}
@@ -208,6 +215,11 @@ public class NuevaFila extends JDialog {
 		else {
 			try {
 				// 1º Recogemos el número de datos que vamos a introducir
+				lab.setText("<html><u>Actualizar fila</u></html>");
+				lab.setAlignmentX(Component.CENTER_ALIGNMENT);
+				lab.setFont(new Font("Tahoma", Font.BOLD, 15));
+				lab.setHorizontalAlignment(SwingConstants.CENTER);
+				
 				Statement statement = cn.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM " + nombreTabla);
 				ResultSetMetaData metadata = resultSet.getMetaData();
@@ -215,7 +227,7 @@ public class NuevaFila extends JDialog {
 				contenido.setLayout(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 				gbc.anchor = GridBagConstraints.WEST;
-		        gbc.insets = new Insets(5, 5, 5, 5);
+				gbc.insets = new Insets(5, 5, 5, 5);
 
 				// 2º Obtennemos el número de los campos
 				campos = new Campos[numeroCol];
@@ -230,13 +242,13 @@ public class NuevaFila extends JDialog {
 
 					// 3º Añadimos los campos a rellenar
 					gbc.gridx = 0;
-		            gbc.gridy = cont;
-					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "),gbc);
-					
+					gbc.gridy = cont;
+					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "), gbc);
+
 					fields[cont] = new JTextField();
-					fields[cont].setPreferredSize(new Dimension(135,30));
-					gbc.gridx=1;
-					contenido.add(fields[cont],gbc);
+					fields[cont].setPreferredSize(new Dimension(135, 30));
+					gbc.gridx = 1;
+					contenido.add(fields[cont], gbc);
 
 					cont++;
 				}

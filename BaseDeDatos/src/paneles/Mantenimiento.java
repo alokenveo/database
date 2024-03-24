@@ -3,6 +3,7 @@ package paneles;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
@@ -20,25 +21,22 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
 import conexiones.Conexion;
 import conexiones.Operaciones;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTextField;
 
 public class Mantenimiento extends JPanel {
 
@@ -75,6 +73,8 @@ public class Mantenimiento extends JPanel {
 
 	private JComboBox<String> comboBox;
 	private JTextField txtValorFiltro;
+
+	private JScrollPane jsc;
 
 	/**
 	 * Create the panel.
@@ -195,6 +195,13 @@ public class Mantenimiento extends JPanel {
 		btnAtras.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO
+				b.getPanel().remove(jsc);
+				b.getPanel().remove(Mantenimiento.this);
+				b.getPanel().add(b.getPanelIzq(), BorderLayout.WEST);
+				b.getPanel().add(b.getCenterPanel(), BorderLayout.CENTER);
+
+				b.getPanel().revalidate();
+				b.getPanel().repaint();
 			}
 		});
 
@@ -203,7 +210,6 @@ public class Mantenimiento extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				if (!nombreTabla.isEmpty()) {
 					int selectedRow = tablaBase.getSelectedRow();
 					if (selectedRow != -1) {
@@ -213,12 +219,12 @@ public class Mantenimiento extends JPanel {
 						if (valor instanceof String) {
 							valor = "'" + valor + "'";
 						}
-						
+
 						nv = new NuevaFila();
 						nv.setM(Mantenimiento.this);
 						nv.setFilaSeleccionada(selectedRow);
 						nv.setValores(cn, nombreTabla, false);
-						nv.setArgumentos(columnName,valor);
+						nv.setArgumentos(columnName, valor);
 						nv.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 						nv.setVisible(true);
 					} else {
@@ -254,14 +260,19 @@ public class Mantenimiento extends JPanel {
 				if (!nombreTabla.isEmpty()) {
 					int selectedRow = tablaBase.getSelectedRow();
 					if (selectedRow != -1) {
-						TableColumnModel columnModel = tablaBase.getColumnModel();
-						Object columnName = columnModel.getColumn(0).getHeaderValue();
-						Object valor = tablaBase.getValueAt(selectedRow, 0);
-						if (((String) valor).length() > 3) {
-							valor = "'" + valor + "'";
-						}
-						if (Operaciones.borrarFila(cn, nombreTabla, columnName, valor)) {
-							model.removeRow(selectedRow);
+						int respuesta = JOptionPane.showConfirmDialog(null,
+								"¿Está usted seguro de querer borrar está fila?", "Confirmación de eliminación",
+								JOptionPane.YES_NO_OPTION);
+						if (respuesta == JOptionPane.YES_OPTION) {
+							TableColumnModel columnModel = tablaBase.getColumnModel();
+							Object columnName = columnModel.getColumn(0).getHeaderValue();
+							Object valor = tablaBase.getValueAt(selectedRow, 0);
+							if (valor instanceof String) {
+								valor = "'" + valor + "'";
+							}
+							if (Operaciones.borrarFila(cn, nombreTabla, columnName, valor)) {
+								model.removeRow(selectedRow);
+							}
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "Seleccione una fila para eliminar");
@@ -269,6 +280,7 @@ public class Mantenimiento extends JPanel {
 				} else {
 					JOptionPane.showMessageDialog(null, "No se ha seleccionado una tabla");
 				}
+
 			}
 		});
 
@@ -279,17 +291,6 @@ public class Mantenimiento extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (!nombreTabla.isEmpty()) {
 					filtrarBusqueda();
-					/*
-					 * List<String> opciones = new ArrayList<>(); try { DatabaseMetaData metadata =
-					 * cn.getMetaData(); ResultSet resultSet = metadata.getColumns(null, null,
-					 * nombreTabla, null);
-					 * 
-					 * while (resultSet.next()) { String columnName =
-					 * resultSet.getString("COLUMN_NAME"); opciones.add(columnName); } } catch
-					 * (SQLException ex) { }
-					 * 
-					 * for (String opcion : opciones) { comboBox.addItem(opcion); }
-					 */
 				} else {
 					JOptionPane.showMessageDialog(null, "No se ha seleccionado una tabla");
 				}
@@ -338,12 +339,12 @@ public class Mantenimiento extends JPanel {
 		// Creo el nuevo JPanel
 		panelMant = new JPanel();
 		panelMant.setLayout(new BoxLayout(panelMant, BoxLayout.Y_AXIS));
-		panelMant.add(Box.createRigidArea(new Dimension(190, 20)));
+		panelMant.add(Box.createRigidArea(new Dimension(190, 15)));
 		panelMant.setBackground(panelAntiguo.getBackground());
 
 		JLabel titleMant = new JLabel("<html><u>Panel de mantenimiento</u></html>");
 		titleMant.setHorizontalAlignment(SwingConstants.CENTER);
-		titleMant.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		titleMant.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		titleMant.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panelMant.add(titleMant);
 
@@ -372,7 +373,12 @@ public class Mantenimiento extends JPanel {
 				String tableName = resultSet.getString("TABLE_NAME");
 				if (!tableName.startsWith("trace_xe")) {
 
-					JButton bot = new JButton(tableName);
+					JButton bot = new JButton("<html><u>" + tableName + "</u></html>");
+					bot.setBackground(new Color(0, 0, 0, 0));
+					bot.setRolloverEnabled(false);
+					bot.setContentAreaFilled(false);
+					bot.setBorderPainted(false);
+					bot.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 					bot.addActionListener(new ActionListener() {
 
 						@Override
@@ -383,20 +389,21 @@ public class Mantenimiento extends JPanel {
 					});
 					bot.setAlignmentX(0.6f);
 					panelMant.add(bot);
-					panelMant.add(Box.createRigidArea(new Dimension(0, 20)));
+					panelMant.add(Box.createRigidArea(new Dimension(0, 10)));
 				}
 			}
 
 			panelMant.revalidate();
 			panelMant.repaint();
 
-			JScrollPane jsc = new JScrollPane(panelMant);
+			jsc = new JScrollPane(panelMant);
 			b.getPanel().remove(b.getPanelIzq());
 			b.getPanel().add(jsc, BorderLayout.WEST);
 			b.getPanel().revalidate();
 			b.getPanel().repaint();
 
 		} catch (ClassNotFoundException | SQLException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
 
@@ -446,7 +453,6 @@ public class Mantenimiento extends JPanel {
 					return false;
 				}
 			};
-			DefaultTableModel tOriginal = new DefaultTableModel(datosArray, nombresColumnas);
 
 			tablaBase = new JTable(model);
 			sc = new JScrollPane(tablaBase);
