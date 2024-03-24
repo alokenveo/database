@@ -58,7 +58,9 @@ public class VPrincipal extends JFrame {
 
 		// Parámetros de la ventana inicial
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(240, 70, 870, 600);
+		//setBounds(240, 70, 870, 600);
+		setSize(870,600);
+		setLocationRelativeTo(null);
 		setTitle("Conexión a base de datos");
 		setContentPane(contentPane);
 

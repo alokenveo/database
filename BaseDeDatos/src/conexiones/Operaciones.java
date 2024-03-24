@@ -41,10 +41,20 @@ public class Operaciones {
 		return false;
 	}
 
-	public static boolean borrarFila(Connection cn, String tNom,Object nomCol,Object val) {
+	public static boolean borrarFila(Connection cn, String tNom, Object nomCol, Object val) {
 		if (cn != null) {
-			String sentencia="DELETE from "+tNom+" WHERE "+nomCol+"="+val;
+			String sentencia = "DELETE from " + tNom + " WHERE " + nomCol + "=" + val;
 			System.out.println(sentencia);
+			try {
+				Statement declaración = cn.createStatement();
+				int filasEliminadas = declaración.executeUpdate(sentencia);
+				if(filasEliminadas>0) {
+					return true;
+				}
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(null, "No se puede borrar esta fila\n" + e.getMessage());
+				return false;
+			}
 		}
 		return false;
 	}

@@ -43,13 +43,17 @@ public class NuevaFila extends JDialog {
 	private JTextField[] fields;
 	private boolean camposVacios = false;
 	private Mantenimiento m;
+	private boolean nuevo;
+	private int filaSeleccionada;
 
 	/**
 	 * Create the dialog.
 	 */
 	public NuevaFila() {
 		setTitle("Nueva Fila");
-		setBounds(550, 130, 310, 381);
+		// setBounds(550, 130, 310, 381);
+		setSize(310, 381);
+		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contenido.setBorder(new MatteBorder(0, 2, 0, 2, (Color) new Color(0, 0, 0)));
 		JScrollPane vista = new JScrollPane(contenido);
@@ -69,29 +73,30 @@ public class NuevaFila extends JDialog {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						if (campos != null) {
-							for (int i = 0; i < campos.length; i++) {
-								campos[i].setValor(fields[i].getText());
+						if (nuevo) {
+							if (campos != null) {
+								for (int i = 0; i < campos.length; i++) {
+									campos[i].setValor(fields[i].getText());
 
-								// Si hay algún campo que no se ha rellenado, pongo esta bandera
-								if (fields[i].getText().isEmpty()) {
-									camposVacios = true;
+									// Si hay algún campo que no se ha rellenado, pongo esta bandera
+									if (fields[i].getText().isEmpty()) {
+										camposVacios = true;
+									}
 								}
-							}
-							if (Operaciones.insertarFila(cn, nombreTabla, campos)) {
-								System.out.println("AÑADIDO");
-								dispose();
-								Object[] valores = new Object[campos.length];
-								for (int i = 0; i < valores.length; i++) {
-									valores[i] = campos[i].getValor();
+								if (Operaciones.insertarFila(cn, nombreTabla, campos)) {
+									dispose();
+									Object[] valores = new Object[campos.length];
+									for (int i = 0; i < valores.length; i++) {
+										valores[i] = campos[i].getValor();
+									}
+									m.getModel().addRow(valores);
+									TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(m.getModel());
+									m.getTablaBase().setRowSorter(sorter);
+									sorter.toggleSortOrder(0);
 								}
-								m.getModel().addRow(valores);
-								TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(m.getModel());
-								m.getTablaBase().setRowSorter(sorter);
-								sorter.toggleSortOrder(0);
 							}
 						} else {
-							
+							// TODO
 						}
 					}
 				});
@@ -113,6 +118,7 @@ public class NuevaFila extends JDialog {
 
 		JPanel pArriba = new JPanel();
 		pArriba.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+
 		getContentPane().add(pArriba, BorderLayout.NORTH);
 		pArriba.setLayout(new BoxLayout(pArriba, BoxLayout.X_AXIS));
 		pArriba.add(Box.createRigidArea(new Dimension(0, 45)));
@@ -124,47 +130,104 @@ public class NuevaFila extends JDialog {
 		pArriba.add(lab);
 	}
 
-	public void setValores(Connection cn, String n) {
+	public void setValores(Connection cn, String n, boolean nuevo) {
 		this.cn = cn;
 		this.nombreTabla = n;
-		rellenarTabla();
+		rellenarTabla(nuevo);
+		this.nuevo = nuevo;
 	}
 
 	public void setM(Mantenimiento m) {
 		this.m = m;
 	}
 
-	private void rellenarTabla() {
-		try {
-			// 1º Recogemos el número de datos que vamos a introducir
-			Statement statement = cn.createStatement();
-			ResultSet resultSet = statement.executeQuery("SELECT * FROM " + nombreTabla);
-			ResultSetMetaData metadata = resultSet.getMetaData();
-			int numeroCol = metadata.getColumnCount();
-			contenido.setLayout(new GridLayout(0, 2, 10, 10));
+	public int getFilaSeleccionada() {
+		return filaSeleccionada;
+	}
 
-			// 2º Obtennemos el número de los campos
-			campos = new Campos[numeroCol];
-			fields = new JTextField[numeroCol];
-			DatabaseMetaData meta = cn.getMetaData();
-			resultSet = meta.getColumns(null, null, nombreTabla, null);
-			int cont = 0;
-			while (resultSet.next()) {
-				String nomCampo = resultSet.getString("COLUMN_NAME");
-				campos[cont] = new Campos();
-				campos[cont].setNomCampo(nomCampo);
+	public void setFilaSeleccionada(int filaSeleccionada) {
+		this.filaSeleccionada = filaSeleccionada;
+	}
 
-				// 3º Añadimos los campos a rellenar
-				contenido.add(new JLabel(campos[cont].getNomCampo() + ": "));
-				fields[cont] = new JTextField();
-				contenido.add(fields[cont]);
+	private void rellenarTabla(boolean nuevo) {
+		if (nuevo)
+			try {
+				// 1º Recogemos el número de datos que vamos a introducir
+				Statement statement = cn.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT * FROM " + nombreTabla);
+				ResultSetMetaData metadata = resultSet.getMetaData();
+				int numeroCol = metadata.getColumnCount();
+				contenido.setLayout(new GridLayout(0, 2, 10, 10));
 
-				cont++;
+				// 2º Obtennemos el número de los campos
+				campos = new Campos[numeroCol];
+				fields = new JTextField[numeroCol];
+				DatabaseMetaData meta = cn.getMetaData();
+				resultSet = meta.getColumns(null, null, nombreTabla, null);
+				int cont = 0;
+				while (resultSet.next()) {
+					String nomCampo = resultSet.getString("COLUMN_NAME");
+					campos[cont] = new Campos();
+					campos[cont].setNomCampo(nomCampo);
+
+					// 3º Añadimos los campos a rellenar
+					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "));
+					fields[cont] = new JTextField();
+					contenido.add(fields[cont]);
+
+					cont++;
+				}
+				contenido.revalidate();
+				contenido.repaint();
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
 			}
-			contenido.revalidate();
-			contenido.repaint();
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+		else {
+			try {
+				// 1º Recogemos el número de datos que vamos a introducir
+				Statement statement = cn.createStatement();
+				ResultSet resultSet = statement.executeQuery("SELECT * FROM " + nombreTabla);
+				ResultSetMetaData metadata = resultSet.getMetaData();
+				int numeroCol = metadata.getColumnCount();
+				contenido.setLayout(new GridLayout(0, 2, 10, 10));
+
+				// 2º Obtennemos el número de los campos
+				campos = new Campos[numeroCol];
+				fields = new JTextField[numeroCol];
+				DatabaseMetaData meta = cn.getMetaData();
+				resultSet = meta.getColumns(null, null, nombreTabla, null);
+				int cont = 0;
+				while (resultSet.next()) {
+					String nomCampo = resultSet.getString("COLUMN_NAME");
+					campos[cont] = new Campos();
+					campos[cont].setNomCampo(nomCampo);
+
+					// 3º Añadimos los campos a rellenar
+					contenido.add(new JLabel(campos[cont].getNomCampo() + ": "));
+					fields[cont] = new JTextField();
+					contenido.add(fields[cont]);
+
+					cont++;
+				}
+				ResultSet res = statement.executeQuery("SELECT * FROM " + nombreTabla);
+				cont = 0;
+				boolean filaEncontrada = false;
+
+				while (res.next() && !filaEncontrada) {
+					if (cont == filaSeleccionada) {
+						filaEncontrada = true;
+						for (int i = 0; i < fields.length; i++) {
+							fields[i].setText(res.getString(i + 1));
+						}
+					}
+					cont++;
+				}
+
+				contenido.revalidate();
+				contenido.repaint();
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
 		}
 	}
 }

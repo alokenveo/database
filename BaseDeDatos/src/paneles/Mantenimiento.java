@@ -36,6 +36,9 @@ import javax.swing.table.TableColumnModel;
 
 import conexiones.Conexion;
 import conexiones.Operaciones;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextField;
 
 public class Mantenimiento extends JPanel {
 
@@ -54,6 +57,7 @@ public class Mantenimiento extends JPanel {
 	JButton add;
 	JButton borrar;
 	JButton filtrar;
+	JButton actualizar;
 
 	// Atributos
 	private Base b;
@@ -66,6 +70,11 @@ public class Mantenimiento extends JPanel {
 	private Connection cn;
 	private NuevaFila nv;
 	private String nombreTabla = "";
+	private JPanel panelFiltro;
+	private boolean panelFiltroVisible = false;
+
+	private JComboBox<String> comboBox;
+	private JTextField txtValorFiltro;
 
 	/**
 	 * Create the panel.
@@ -83,6 +92,7 @@ public class Mantenimiento extends JPanel {
 		pCent.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 		pDer = new JPanel();
 		pDer.setBorder(new MatteBorder(2, 0, 2, 2, (Color) new Color(0, 0, 0)));
+		actualizar = new JButton("Actualizar fila");
 		add = new JButton("Añadir fila");
 		borrar = new JButton("Borrar fila");
 		filtrar = new JButton("Filtrar búsqueda");
@@ -129,22 +139,53 @@ public class Mantenimiento extends JPanel {
 		titleDer.setFont(new Font("Tahoma", Font.BOLD, 13));
 		titleDer.setHorizontalAlignment(SwingConstants.CENTER);
 		titleDer.setAlignmentX(CENTER_ALIGNMENT);
-		titleDer.setPreferredSize(new Dimension(150, 40));
+		titleDer.setSize(new Dimension(150, 40));
 		pDer.add(titleDer);
 
 		// Botones de mantenimiento
+		actualizar.setAlignmentX(0.6f);
 		add.setAlignmentX(0.6f);
 		borrar.setAlignmentX(0.6f);
 		filtrar.setAlignmentX(0.5f);
 
+		pDer.add(Box.createRigidArea(new Dimension(0, 20)));
+		pDer.add(actualizar);
 		pDer.add(Box.createRigidArea(new Dimension(0, 20)));
 		pDer.add(add);
 		pDer.add(Box.createRigidArea(new Dimension(0, 20)));
 		pDer.add(borrar);
 		pDer.add(Box.createRigidArea(new Dimension(0, 20)));
 		pDer.add(filtrar);
-		pDer.add(Box.createRigidArea(new Dimension(0, 20)));
+		pDer.add(Box.createRigidArea(new Dimension(0, 5)));
 		pMant.add(pDer, BorderLayout.EAST);
+
+		panelFiltro = new JPanel();
+		panelFiltro.setVisible(false);
+		pDer.add(panelFiltro);
+		panelFiltro.setLayout(null);
+
+		String[] opciones = { "Opción 1", "Opción 2", "Opción 3", "Opción 4" };
+		comboBox = new JComboBox<String>(opciones);
+		comboBox.setBounds(10, 36, 130, 22);
+		panelFiltro.add(comboBox);
+
+		JLabel lblNewLabel_1 = new JLabel("Filtrar por:");
+		lblNewLabel_1.setBounds(10, 11, 130, 14);
+		panelFiltro.add(lblNewLabel_1);
+
+		JLabel lblNewLabel_2 = new JLabel("Valor:");
+		lblNewLabel_2.setBounds(10, 79, 46, 14);
+		panelFiltro.add(lblNewLabel_2);
+
+		txtValorFiltro = new JTextField();
+		txtValorFiltro.setBounds(10, 104, 130, 20);
+		panelFiltro.add(txtValorFiltro);
+		txtValorFiltro.setColumns(10);
+
+		JButton btnOkFiltro = new JButton("OK");
+		btnOkFiltro.setBounds(84, 144, 56, 23);
+		panelFiltro.add(btnOkFiltro);
+		pDer.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		/*
 		 * ACCIONES
@@ -157,13 +198,38 @@ public class Mantenimiento extends JPanel {
 			}
 		});
 
+		// Acción del botón actualizar
+		actualizar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (!nombreTabla.isEmpty()) {
+					int selectedRow = tablaBase.getSelectedRow();
+					if (selectedRow != -1) {
+						nv = new NuevaFila();
+						nv.setM(Mantenimiento.this);
+						nv.setFilaSeleccionada(selectedRow);
+						nv.setValores(cn, nombreTabla, false);
+						nv.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						nv.setVisible(true);
+					} else {
+						JOptionPane.showMessageDialog(null, "Seleccione una fila para actualizar");
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "No se ha seleccionado una tabla");
+				}
+			}
+		});
+
 		// Acción del botón de añadir fila
 		add.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
 				if (!nombreTabla.isEmpty()) {
 					nv = new NuevaFila();
 					nv.setM(Mantenimiento.this);
-					nv.setValores(cn, nombreTabla);
+					nv.setValores(cn, nombreTabla, true);
 					nv.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 					nv.setVisible(true);
 				} else {
@@ -183,9 +249,14 @@ public class Mantenimiento extends JPanel {
 						TableColumnModel columnModel = tablaBase.getColumnModel();
 						Object columnName = columnModel.getColumn(0).getHeaderValue();
 						Object valor = tablaBase.getValueAt(selectedRow, 0);
+						if (((String) valor).length() > 3) {
+							valor = "'" + valor + "'";
+						}
 						if (Operaciones.borrarFila(cn, nombreTabla, columnName, valor)) {
 							model.removeRow(selectedRow);
 						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Seleccione una fila para eliminar");
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "No se ha seleccionado una tabla");
@@ -198,7 +269,31 @@ public class Mantenimiento extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				filtrarBusqueda();
+				if (!nombreTabla.isEmpty()) {
+					filtrarBusqueda();
+					/*
+					 * List<String> opciones = new ArrayList<>(); try { DatabaseMetaData metadata =
+					 * cn.getMetaData(); ResultSet resultSet = metadata.getColumns(null, null,
+					 * nombreTabla, null);
+					 * 
+					 * while (resultSet.next()) { String columnName =
+					 * resultSet.getString("COLUMN_NAME"); opciones.add(columnName); } } catch
+					 * (SQLException ex) { }
+					 * 
+					 * for (String opcion : opciones) { comboBox.addItem(opcion); }
+					 */
+				} else {
+					JOptionPane.showMessageDialog(null, "No se ha seleccionado una tabla");
+				}
+			}
+		});
+
+		comboBox.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+
 			}
 		});
 
@@ -297,6 +392,7 @@ public class Mantenimiento extends JPanel {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private void mostrarTabla(Connection c, String tNom) {
 		titleTabla.setText(tNom);
 		pCent.removeAll();
@@ -335,7 +431,13 @@ public class Mantenimiento extends JPanel {
 			}
 
 			// Creación de la tabla y su vista
-			model = new DefaultTableModel(datosArray, nombresColumnas);
+			model = new DefaultTableModel(datosArray, nombresColumnas) {
+				@Override
+				public boolean isCellEditable(int fila, int columna) {
+					// Hacer que todas las celdas sean no editables
+					return false;
+				}
+			};
 			DefaultTableModel tOriginal = new DefaultTableModel(datosArray, nombresColumnas);
 
 			tablaBase = new JTable(model);
@@ -369,6 +471,12 @@ public class Mantenimiento extends JPanel {
 
 	private void filtrarBusqueda() {
 		// TODO
+		if (panelFiltroVisible == false) {
+			panelFiltro.setVisible(true);
+			panelFiltroVisible = true;
+		} else {
+			panelFiltro.setVisible(false);
+			panelFiltroVisible = false;
+		}
 	}
-
 }
