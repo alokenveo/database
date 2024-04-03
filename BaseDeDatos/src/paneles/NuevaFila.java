@@ -80,6 +80,7 @@ public class NuevaFila extends JDialog {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if (nuevo) {
+							//Para añadir una nueva fila
 							if (campos != null) {
 								for (int i = 0; i < campos.length; i++) {
 									campos[i].setValor(fields[i].getText());
@@ -87,6 +88,7 @@ public class NuevaFila extends JDialog {
 									// Si hay algún campo que no se ha rellenado, pongo esta bandera
 									if (fields[i].getText().isEmpty()) {
 										setCamposVacios(true);
+										campos[i].setValor("NULL");
 									}
 								}
 								if (Operaciones.insertarFila(cn, nombreTabla, campos)) {
@@ -102,6 +104,7 @@ public class NuevaFila extends JDialog {
 								}
 							}
 						} else {
+							//Para actualizar la fila
 							for (int i = 0; i < campos.length; i++) {
 								if (!campos[i].getValor().equals(fields[i].getText())) {
 									campos[i].setValor(fields[i].getText());

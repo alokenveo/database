@@ -215,7 +215,7 @@ public class Mantenimiento extends JPanel {
 						TableColumnModel columnModel = tablaBase.getColumnModel();
 						Object columnName = columnModel.getColumn(0).getHeaderValue();
 						Object valor = tablaBase.getValueAt(selectedRow, 0);
-						if (valor instanceof String) {
+						if (!(valor instanceof Integer)) {
 							valor = "'" + valor + "'";
 						}
 
@@ -266,7 +266,7 @@ public class Mantenimiento extends JPanel {
 							TableColumnModel columnModel = tablaBase.getColumnModel();
 							Object columnName = columnModel.getColumn(0).getHeaderValue();
 							Object valor = tablaBase.getValueAt(selectedRow, 0);
-							if (valor instanceof String) {
+							if (!(valor instanceof Integer)) {
 								valor = "'" + valor + "'";
 							}
 							if (Operaciones.borrarFila(cn, nombreTabla, columnName, valor)) {

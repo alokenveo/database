@@ -33,7 +33,7 @@ public class Operaciones {
 		if (cn != null) {
 			String sentencia = "INSERT INTO " + tNom + " VALUES(";
 			for (int i = 0; i < c.length; i++) {
-				if (((String) c[i].getValor()).length() > 3) {
+				if (!(c[i].getValor() instanceof Integer) && !c[i].getValor().equals("NULL")) {
 					sentencia += "'" + c[i].getValor() + "',";
 				} else {
 					sentencia += c[i].getValor() + ",";
