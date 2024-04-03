@@ -122,6 +122,7 @@ public class Base extends JPanel {
 					addBotones(panelIzq);
 				} else {
 					// Para ocultar los botones
+					@SuppressWarnings("deprecation")
 					int num = panelIzq.countComponents();
 					panelIzq.remove(num - 1);
 					panelIzq.remove(num - 2);
@@ -158,6 +159,10 @@ public class Base extends JPanel {
 
 	public Conexion getCon() {
 		return c;
+	}
+
+	public VPrincipal getV() {
+		return v;
 	}
 
 	public void setV(VPrincipal v) {
