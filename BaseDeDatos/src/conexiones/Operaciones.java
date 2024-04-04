@@ -81,24 +81,11 @@ public class Operaciones {
 	}
 
 	// SENTENCIAS SQL
-	public static boolean seleccionarCambioValvulas(Connection cn, DefaultTableModel dm, JTextPane txt) {
+	public static boolean ejecutarSentencia(Connection cn,String sent, DefaultTableModel dm, JTextPane txt) {
 		if (cn != null) {
-			String sentencia = "SELECT \r\n" + "    Herramientas.her_descripcion AS 'Descripción Herramienta',\r\n"
-					+ "    Reparaciones.rep_nombre AS 'Nombre Reparación',\r\n"
-					+ "    Locomotora.loc_nombre AS 'Nombre Locomotora'\r\n" + "FROM \r\n" + "    Herramientas \r\n"
-					+ "JOIN \r\n" + "    Emplean  ON Herramientas.her_cod_herramienta = Emplean.emp_cod_herramienta\r\n"
-					+ "JOIN \r\n" + "    Tareas  ON Emplean.emp_cod_reparacion = Tareas.tar_cod_reparacion\r\n"
-					+ "JOIN \r\n"
-					+ "    Reparaciones ON Tareas.tar_cod_reparacion = Reparaciones.rep_cod_reparacion\r\n"
-					+ "JOIN \r\n"
-					+ "    Locomotora  ON Reparaciones.rep_cod_locomotora = Locomotora.Loc_cod_locomotora\r\n"
-					+ "WHERE \r\n" + "    Tareas.tar_nombre = 'Cambio de Válvulas'\r\n"
-					+ "    AND Locomotora.loc_fecha_inicio >= '01/01/2008'\r\n"
-					+ "    AND Locomotora.loc_fecha_inicio <= '31/05/2009'\r\n" + "ORDER BY \r\n"
-					+ "    Locomotora.loc_nombre ASC;";
 			try {
 				Statement stmt = cn.createStatement();
-				ResultSet rs = stmt.executeQuery(sentencia);
+				ResultSet rs = stmt.executeQuery(sent);
 
 				ResultSetMetaData metaData = rs.getMetaData();
 				int columnCount = metaData.getColumnCount();
@@ -120,21 +107,6 @@ public class Operaciones {
 				txt.setText(e.getMessage());
 				return false;
 			}
-		}
-		return false;
-	}
-
-	public static boolean seleccionarMotoresDiesel(Connection cn) {
-		if (cn != null) {
-			String sentencia = "";
-
-		}
-		return false;
-	}
-
-	public static boolean obtenerReglajesValvulas(Connection cn) {
-		if (cn != null) {
-			String sentencia = "";
 		}
 		return false;
 	}

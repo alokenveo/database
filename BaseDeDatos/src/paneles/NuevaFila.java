@@ -80,7 +80,7 @@ public class NuevaFila extends JDialog {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						if (nuevo) {
-							//Para añadir una nueva fila
+							// Para añadir una nueva fila
 							if (campos != null) {
 								for (int i = 0; i < campos.length; i++) {
 									campos[i].setValor(fields[i].getText());
@@ -104,9 +104,14 @@ public class NuevaFila extends JDialog {
 								}
 							}
 						} else {
-							//Para actualizar la fila
+							// Para actualizar la fila
 							for (int i = 0; i < campos.length; i++) {
-								if (!campos[i].getValor().equals(fields[i].getText())) {
+								if (campos[i].getValor() == null) {
+									campos[i].setValor(fields[i].getText());
+									if (Operaciones.actualizarTabla(cn, nombreTabla, campos, i, columnName, valor)) {
+										m.mostrarTabla(cn, nombreTabla);
+									}
+								} else if (!campos[i].getValor().equals(fields[i].getText())) {
 									campos[i].setValor(fields[i].getText());
 									if (Operaciones.actualizarTabla(cn, nombreTabla, campos, i, columnName, valor)) {
 										m.mostrarTabla(cn, nombreTabla);
@@ -222,7 +227,7 @@ public class NuevaFila extends JDialog {
 				lab.setAlignmentX(Component.CENTER_ALIGNMENT);
 				lab.setFont(new Font("Tahoma", Font.BOLD, 15));
 				lab.setHorizontalAlignment(SwingConstants.CENTER);
-				
+
 				Statement statement = cn.createStatement();
 				ResultSet resultSet = statement.executeQuery("SELECT * FROM " + nombreTabla);
 				ResultSetMetaData metadata = resultSet.getMetaData();

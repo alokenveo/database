@@ -123,8 +123,13 @@ public class Base extends JPanel {
 
 		scrollPane = new JScrollPane();
 		scrollPane.setVisible(false);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBounds(135, 159, 393, 306);
 		centerPanel.add(scrollPane);
+
+		JButton btnLimpiar = new JButton("LIMPIAR");
+		btnLimpiar.setBounds(555, 5, 89, 23);
+		centerPanel.add(btnLimpiar);
 
 		/*
 		 * ACCIONES
@@ -157,6 +162,16 @@ public class Base extends JPanel {
 					panelIzq.revalidate();
 					panelIzq.repaint();
 				}
+			}
+		});
+
+		// Acción del botón Limpiar
+		btnLimpiar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				desc_sentencia.setText("");
+				scrollPane.setVisible(false);
 			}
 		});
 
@@ -219,17 +234,32 @@ public class Base extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+				String sentencia = "SELECT \r\n" + "    Herramientas.her_descripcion AS 'Descripción Herramienta',\r\n"
+						+ "    Reparaciones.rep_nombre AS 'Nombre Reparación',\r\n"
+						+ "    Locomotora.loc_nombre AS 'Nombre Locomotora'\r\n" + "FROM \r\n" + "    Herramientas \r\n"
+						+ "JOIN \r\n"
+						+ "    Emplean  ON Herramientas.her_cod_herramienta = Emplean.emp_cod_herramienta\r\n"
+						+ "JOIN \r\n" + "    Tareas  ON Emplean.emp_cod_reparacion = Tareas.tar_cod_reparacion\r\n"
+						+ "JOIN \r\n"
+						+ "    Reparaciones ON Tareas.tar_cod_reparacion = Reparaciones.rep_cod_reparacion\r\n"
+						+ "JOIN \r\n"
+						+ "    Locomotora  ON Reparaciones.rep_cod_locomotora = Locomotora.Loc_cod_locomotora\r\n"
+						+ "WHERE \r\n" + "    Tareas.tar_nombre = 'Cambio de Válvulas'\r\n"
+						+ "    AND Locomotora.loc_fecha_inicio >= '01/01/2008'\r\n"
+						+ "    AND Locomotora.loc_fecha_inicio <= '31/05/2009'\r\n" + "ORDER BY \r\n"
+						+ "    Locomotora.loc_nombre ASC;";
 				DefaultTableModel model = new DefaultTableModel();
 				try {
-					if (Operaciones.seleccionarCambioValvulas(c.getConnection(), model,desc_sentencia)) {
+					if (Operaciones.ejecutarSentencia(c.getConnection(), sentencia, model, desc_sentencia)) {
 						desc_sentencia.setText(
 								"Esta sentencia se encarga de seleccionar todas las herramientas empleadas en la tarea “Cambio de Válvulas” entre el primer día de Enero "
 										+ "de 2008 y el último día de Mayo de 2009, solo de aquellas reparaciones cuyas locomotoras hayan empezado "
 										+ "a funcionar después del año 2000, ordenada ascendentemente por nombre de locomotora");
-						JTable tab=new JTable(model);
+						JTable tab = new JTable(model);
 						scrollPane.setViewportView(tab);
 						scrollPane.setVisible(true);
+					} else {
+						scrollPane.setVisible(false);
 					}
 				} catch (ClassNotFoundException | SQLException e1) {
 					desc_sentencia.setText(e1.getMessage());
@@ -240,24 +270,68 @@ public class Base extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				desc_sentencia.setText(
-						"Esta sentencia se encarga de seleccionar la cantidad total de tareas y el número total de horas empleadas en ellas que han sido realizadas "
-								+ "por los operarios Aprendices en el área de localización llamada “Motores Diesel”, ordenadas "
-								+ "ascendentemente por el nombre del Aprendiz y el nombre de la tarea");
-				scrollPane.setVisible(true);
+				String sentencia = "SELECT \r\n" + "    ope.ope_nombre AS [Nombre Aprendiz],\r\n"
+						+ "    t.tar_nombre AS [Nombre Tarea],\r\n" + "    t.tar_duracion AS [Duración Tarea],\r\n"
+						+ "    COUNT(*) AS [Total tareas realizadas],\r\n"
+						+ "    SUM(t.tar_duracion) AS [Horas totales realizadas]\r\n" + "FROM \r\n"
+						+ "    Operarios ope\r\n" + "JOIN \r\n" + "    Asisten ast ON ope.ope_dni = ast.Ast_dni\r\n"
+						+ "JOIN \r\n" + "    Asigna asi ON ast.Ast_cod_curso = asi.Asi_cod_reparacion\r\n" + "JOIN \r\n"
+						+ "    Tareas t ON asi.Asi_num_tarea = t.tar_num_tarea AND asi.Asi_cod_reparacion = t.tar_cod_reparacion\r\n"
+						+ "JOIN \r\n" + "    Areas_trabajo are ON asi.Asi_num_area = are.are_num_area\r\n"
+						+ "WHERE \r\n" + "    ope.ope_tipo = 'A' -- Operarios Aprendices\r\n"
+						+ "    AND are.are_localizacion = 'Motores Diesel'\r\n" + "GROUP BY \r\n"
+						+ "    ope.ope_nombre,\r\n" + "    t.tar_nombre,\r\n" + "    t.tar_duracion\r\n"
+						+ "ORDER BY \r\n" + "    ope.ope_nombre ASC,\r\n" + "    t.tar_nombre ASC;";
+				DefaultTableModel model = new DefaultTableModel();
+				try {
+					if (Operaciones.ejecutarSentencia(c.getConnection(), sentencia, model, desc_sentencia)) {
+						desc_sentencia.setText(
+								"Esta sentencia se encarga de seleccionar la cantidad total de tareas y el número total de horas empleadas en ellas que han sido realizadas "
+										+ "por los operarios Aprendices en el área de localización llamada “Motores Diesel”, ordenadas "
+										+ "ascendentemente por el nombre del Aprendiz y el nombre de la tarea");
+						JTable tab = new JTable(model);
+						scrollPane.setViewportView(tab);
+						scrollPane.setVisible(true);
+					} else {
+						scrollPane.setVisible(false);
+					}
+				} catch (ClassNotFoundException | SQLException e1) {
+					desc_sentencia.setText(e1.getMessage());
+				}
 			}
 		});
 		bt3.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				desc_sentencia.setText(
-						"Esta sentencia se encarga de obtener un listado con los operarios aprendices que han obtenido una media mayor de siete (7) puntos en "
-								+ "los cursos llamados “Reglajes de Válvulas” realizados durante los dos (2) años anteriores al año en curso, "
-								+ "ordenado descendentemente por la puntuación media y año");
-				scrollPane.setVisible(true);
+				String sentencia = "SELECT \r\n" + "    ope.ope_nombre AS [Nombre Aprendiz],\r\n"
+						+ "    YEAR(punt_fecha) AS [Año Realización],\r\n"
+						+ "    AVG(pun_puntuacion) AS [Puntuación Media]\r\n" + "FROM \r\n" + "    Operarios ope\r\n"
+						+ "JOIN \r\n" + "    Asisten ast ON ope.ope_dni = ast.Ast_dni\r\n" + "JOIN \r\n"
+						+ "    Cursos cur ON ast.Ast_cod_curso = cur.cur_cod_curso\r\n" + "JOIN \r\n"
+						+ "    Puntuacion pun ON ast.Ast_cod_curso = pun.pun_cod_curso AND ast.Ast_dni = pun.pun_dni\r\n"
+						+ "WHERE \r\n" + "    ope.ope_tipo = 'A' -- Operarios Aprendices\r\n"
+						+ "    AND cur.cur_nombre = 'Reglajes de Válvulas'\r\n"
+						+ "    AND YEAR(punt_fecha) BETWEEN YEAR(GETDATE()) - 2 AND YEAR(GETDATE()) - 1\r\n"
+						+ "GROUP BY \r\n" + "    ope.ope_nombre,\r\n" + "    YEAR(punt_fecha)\r\n" + "HAVING \r\n"
+						+ "    AVG(pun_puntuacion) > 7\r\n" + "ORDER BY \r\n" + "    [Puntuación Media] DESC,\r\n"
+						+ "    [Año Realización] DESC;";
+				DefaultTableModel model = new DefaultTableModel();
+				try {
+					if (Operaciones.ejecutarSentencia(c.getConnection(), sentencia, model, desc_sentencia)) {
+						desc_sentencia.setText(
+								"Esta sentencia se encarga de obtener un listado con los operarios aprendices que han obtenido una media mayor de siete (7) puntos en "
+										+ "los cursos llamados “Reglajes de Válvulas” realizados durante los dos (2) años anteriores al año en curso, "
+										+ "ordenado descendentemente por la puntuación media y año");
+						JTable tab = new JTable(model);
+						scrollPane.setViewportView(tab);
+						scrollPane.setVisible(true);
+					} else {
+						scrollPane.setVisible(false);
+					}
+				} catch (ClassNotFoundException | SQLException e1) {
+					desc_sentencia.setText(e1.getMessage());
+				}
 			}
 		});
 

@@ -21,7 +21,6 @@ public class Conexion {
 			cn = DriverManager.getConnection(cadenaConexion, "", "");
 		} catch (Exception e) {
 			cn = null;
-			System.out.println(e.getMessage());
 		}
 
 		return cn;
