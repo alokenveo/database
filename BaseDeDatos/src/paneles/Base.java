@@ -4,19 +4,24 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
 
 import conexiones.Conexion;
+import conexiones.Operaciones;
 import inicio.VPrincipal;
 
 public class Base extends JPanel {
@@ -32,13 +37,17 @@ public class Base extends JPanel {
 	JButton btnMant;
 	JButton btnSentencias;
 	JPanel centerPanel;
-	JLabel label;
+	JLabel lblSeHan;
 
 	// Atributos
 	private VPrincipal v;
 	private boolean botonesAdded = false;
 	private Mantenimiento m;
 	private Conexion c;
+
+	private JTextPane desc_sentencia;
+
+	private JScrollPane scrollPane;
 
 	/**
 	 * Create the panel.
@@ -53,7 +62,9 @@ public class Base extends JPanel {
 		btnMant = new JButton("Mantenimiento");
 		btnSentencias = new JButton("Sentencias SQL");
 		centerPanel = new JPanel();
-		label = new JLabel("Panel central");
+		lblSeHan = new JLabel("<html><u>Visualización de sentencias</u></html>");
+		lblSeHan.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSeHan.setBounds(198, 5, 202, 19);
 
 		// Parámteros de la ventana inicial
 		setBounds(0, 0, 844, 551);
@@ -99,11 +110,21 @@ public class Base extends JPanel {
 
 		// ZONA CENTRAL
 		centerPanel.setBackground(Color.WHITE);
-		centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		centerPanel.setLayout(null);
 
-		label.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		centerPanel.add(label);
+		lblSeHan.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		centerPanel.add(lblSeHan);
 		panel.add(centerPanel, BorderLayout.CENTER);
+
+		desc_sentencia = new JTextPane();
+		desc_sentencia.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		desc_sentencia.setBounds(61, 58, 530, 81);
+		centerPanel.add(desc_sentencia);
+
+		scrollPane = new JScrollPane();
+		scrollPane.setVisible(false);
+		scrollPane.setBounds(135, 159, 393, 306);
+		centerPanel.add(scrollPane);
 
 		/*
 		 * ACCIONES
@@ -199,7 +220,20 @@ public class Base extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-
+				DefaultTableModel model = new DefaultTableModel();
+				try {
+					if (Operaciones.seleccionarCambioValvulas(c.getConnection(), model,desc_sentencia)) {
+						desc_sentencia.setText(
+								"Esta sentencia se encarga de seleccionar todas las herramientas empleadas en la tarea “Cambio de Válvulas” entre el primer día de Enero "
+										+ "de 2008 y el último día de Mayo de 2009, solo de aquellas reparaciones cuyas locomotoras hayan empezado "
+										+ "a funcionar después del año 2000, ordenada ascendentemente por nombre de locomotora");
+						JTable tab=new JTable(model);
+						scrollPane.setViewportView(tab);
+						scrollPane.setVisible(true);
+					}
+				} catch (ClassNotFoundException | SQLException e1) {
+					desc_sentencia.setText(e1.getMessage());
+				}
 			}
 		});
 		bt2.addActionListener(new ActionListener() {
@@ -207,7 +241,11 @@ public class Base extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-
+				desc_sentencia.setText(
+						"Esta sentencia se encarga de seleccionar la cantidad total de tareas y el número total de horas empleadas en ellas que han sido realizadas "
+								+ "por los operarios Aprendices en el área de localización llamada “Motores Diesel”, ordenadas "
+								+ "ascendentemente por el nombre del Aprendiz y el nombre de la tarea");
+				scrollPane.setVisible(true);
 			}
 		});
 		bt3.addActionListener(new ActionListener() {
@@ -215,7 +253,11 @@ public class Base extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-
+				desc_sentencia.setText(
+						"Esta sentencia se encarga de obtener un listado con los operarios aprendices que han obtenido una media mayor de siete (7) puntos en "
+								+ "los cursos llamados “Reglajes de Válvulas” realizados durante los dos (2) años anteriores al año en curso, "
+								+ "ordenado descendentemente por la puntuación media y año");
+				scrollPane.setVisible(true);
 			}
 		});
 
@@ -233,5 +275,4 @@ public class Base extends JPanel {
 
 		botonesAdded = true;
 	}
-
 }
